@@ -98,9 +98,12 @@ SMPCache::SMPCache(SMemorySystem *dms, const char *section, const char *name)
     , readMiss("%s:readMiss", name)
     , writeMiss("%s:writeMiss", name)
 
-    , coheMiss("%s:coheMiss", name)
-    , compMiss("%s:compMiss", name)
-    , replMiss("%s:replMiss", name)
+    , readcoheMiss("%s:readcoheMiss", name)
+    , readcompMiss("%s:readcompMiss", name)
+    , readreplMiss("%s:readreplMiss", name)
+    , writecoheMiss("%s:writecoheMiss", name)
+    , writecompMiss("%s:writecompMiss", name)
+    , writereplMiss("%s:writereplMiss", name)
    // , confMiss("%s:confMiss", name)
    // , capMiss("%s:capMiss", name)
 
@@ -506,12 +509,12 @@ void SMPCache::doRead(MemRequest *mreq)
 // checking for read misses due to coherence
 
 if (invdb->find(tag) != invdb->end()) {
-coheMiss.inc();
-} else {
+readcoheMiss.inc();
+} 
 
 // checking for other type of misses
-if (std::find(db.begin(), db.end(), tag) == db.end()) {
-compMiss.inc();
+else if (std::find(db.begin(), db.end(), tag) == db.end()) {
+readcompMiss.inc();
 db.push_back(tag);
 } else {
 	if (std::find(capdb.begin(), capdb.end(), tag) == capdb.end()) { 	//for checking capacity misses
@@ -519,9 +522,9 @@ db.push_back(tag);
               } else {
 		//confMiss.inc();		
 		}
-	replMiss.inc();  // capMiss or confMiss counted as replMiss 
+	readreplMiss.inc();  // capMiss or confMiss counted as replMiss 
 }
-}
+
 
 if (std::find(capdb.begin(), capdb.end(), tag) == capdb.end()) { 	//for checking capacity misses
 	
@@ -677,9 +680,11 @@ capdb.push_back(tag);
     }
 
     writeMiss.inc();
-
-if (std::find(db.begin(), db.end(), tag) == db.end()) {
-//compMiss.inc();
+if (invdb->find(tag) != invdb->end()) {
+writecoheMiss.inc();
+} 
+else if (std::find(db.begin(), db.end(), tag) == db.end()) {
+writecompMiss.inc();
 db.push_back(tag);
 } else {
 	if (std::find(capdb.begin(), capdb.end(), tag) == capdb.end()) { // step 1	//for checking capacity misses
@@ -687,7 +692,7 @@ db.push_back(tag);
 	} else {
 //		confMiss.inc();
 		}
-//	replMiss.inc();
+	writereplMiss.inc();
 }
 
 

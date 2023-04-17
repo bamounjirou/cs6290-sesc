@@ -86,9 +86,12 @@ protected:
     GStatsCntr writeHit;
     GStatsCntr readMiss;
     GStatsCntr writeMiss;
-GStatsCntr coheMiss;   
-GStatsCntr compMiss;
-GStatsCntr replMiss;
+GStatsCntr readcoheMiss;   
+GStatsCntr readcompMiss;
+GStatsCntr readreplMiss;
+GStatsCntr writecoheMiss;   
+GStatsCntr writecompMiss;
+GStatsCntr writereplMiss;
 // GStatsCntr confMiss;
 // GStatsCntr capMiss;
     
